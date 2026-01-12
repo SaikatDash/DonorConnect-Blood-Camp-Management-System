@@ -114,6 +114,8 @@ It focuses on **fast donor search, smart camp scheduling, and real-time blood st
 - 📍 Location-based camp suggestions using maps.  
 - 🔐 Role-based access for admins, staff, and donors.  
 - 📈 Advanced analytics for donor retention and camp performance.
+- AI chatbot Implementation
+
 
 ---
 
