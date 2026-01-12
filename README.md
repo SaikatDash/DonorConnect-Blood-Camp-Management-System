@@ -26,7 +26,6 @@
 
 ## 🎬 Live Preview (Demo)
 
-> Replace the GIF below with your own app recording.
 
 <p align="center">
   <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZTFqZ25uZDFwZ2ZoY3N2b2NrN3IxNjV4bGZqZzNpaTFvN2F2ZGIxZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ZVik7pBtu9dNS/giphy.gif" 
@@ -50,14 +49,16 @@ It focuses on **fast donor search, smart camp scheduling, and real-time blood st
 - 🔍 **Smart Search** – Find donors or available blood by blood group, city, and recent donation history.  
 - 🚨 **Emergency Broadcast** – Quickly list matching donors for urgent requests from hospitals.  
 - 📊 **Analytics Dashboard** – Visualize total units collected per camp, blood group, and month/season.
+- **Doctor Appointment System** - Smart Doctor Appointment & Scheduling System
+
 
 ---
 
 ## 🧱 Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript (or React / any framework you use)  
-- **Backend**: Python / Node.js / PHP / Java (your choice)  
-- **Database**: MySQL / PostgreSQL (relational DB for structured storage)  
+- **Frontend**: HTML,Streamlit
+- **Backend**: Python
+- **Database**: MySQL  
 - **Tools**: VS Code, Git, GitHub  
 
 > 🔧 Replace the stack above with your actual technologies.
@@ -74,7 +75,16 @@ It focuses on **fast donor search, smart camp scheduling, and real-time blood st
 - `blood_inventory` – inventory_id, blood_group, units_available, camp_id / location, expiry_date  
 - `requests` – request_id, hospital_name, blood_group, units_needed, city, status, created_at  
 
-> You can add an ER diagram image or schema screenshot here.
+> ER diagrams
+
+---
+##Implementations
+1.**Web Page integration**:Using HTML, CSS and Streamlit for different pages to done the Web View.
+2. **Database Functioning**: used MYSQL different commands like : DDL,DML and Procedure, Function for better database implementation in this website.
+---
+
+
+
 
 ---
 
@@ -93,6 +103,7 @@ It focuses on **fast donor search, smart camp scheduling, and real-time blood st
    - When a hospital requests blood, system filters inventory & donor list.
 
 ---
+
 
 ## 📸 UI Snapshots
 
@@ -126,10 +137,14 @@ It focuses on **fast donor search, smart camp scheduling, and real-time blood st
 git clone https://github.com/your-username/donorconnect.git
 cd donorconnect
 
-# Setup backend (example: Node.js)
-npm install
-npm run dev
-
-# Or for Python (FastAPI / Django / Flask)
+# Backend: Python (FastAPI)
 pip install -r requirements.txt
 python app.py
+
+#Streamlit Run
+python -m streamlit run medicine.py
+streamlit run medicine.py
+
+
+
+
