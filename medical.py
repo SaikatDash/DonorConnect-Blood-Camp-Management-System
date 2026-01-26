@@ -14,7 +14,8 @@ def create_connection():
         try:
             db_port = int(os.getenv('DB_PORT', 3306))
         except ValueError:
-            st.warning(f"Invalid DB_PORT value. Using default port 3306.")
+            invalid_port = os.getenv('DB_PORT')
+            st.warning(f"Invalid DB_PORT value '{invalid_port}'. Using default port 3306.")
             db_port = 3306
         
         connection = mysql.connector.connect(
