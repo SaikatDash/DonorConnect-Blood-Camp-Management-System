@@ -10,9 +10,16 @@ load_dotenv()
 # Database connection function
 def create_connection():
     try:
+        # Get database port with error handling
+        try:
+            db_port = int(os.getenv('DB_PORT', 3306))
+        except ValueError:
+            st.warning(f"Invalid DB_PORT value. Using default port 3306.")
+            db_port = 3306
+        
         connection = mysql.connector.connect(
             host=os.getenv('DB_HOST', 'localhost'),
-            port=int(os.getenv('DB_PORT', 3306)),
+            port=db_port,
             user=os.getenv('DB_USER', 'root'),
             password=os.getenv('DB_PASSWORD', ''),
             database=os.getenv('DB_NAME', 'patient')
