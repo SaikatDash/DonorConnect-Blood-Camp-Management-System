@@ -1,19 +1,27 @@
 import streamlit as st
 import mysql.connector
 from mysql.connector import Error
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Database connection function
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='sys449420',
-            database='patient'
+            host=os.getenv('DB_HOST', 'localhost'),
+            port=int(os.getenv('DB_PORT', 3306)),
+            user=os.getenv('DB_USER', 'root'),
+            password=os.getenv('DB_PASSWORD', ''),
+            database=os.getenv('DB_NAME', 'patient')
         )
         return connection
     except Error as e:
         st.error(f"Error connecting to database: {e}")
+        st.info("Please ensure MySQL is running and database credentials are correctly configured in the .env file.")
+        st.info("Copy .env.example to .env and update with your database credentials.")
         return None
 
 # Function to insert data into database

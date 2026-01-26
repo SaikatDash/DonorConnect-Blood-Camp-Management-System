@@ -130,21 +130,70 @@ It focuses on **fast donor search, smart camp scheduling, and real-time blood st
 
 ---
 
-## 📂 Project Setup (Example)
+## 📂 Project Setup
+
+### Prerequisites
+- Python 3.7 or higher
+- MySQL Server 5.7 or higher
+
+### Installation Steps
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/donorconnect.git
-cd donorconnect
+# 1. Clone the repository
+git clone https://github.com/SaikatDash/DonorConnect-Blood-Camp-Management-System.git
+cd DonorConnect-Blood-Camp-Management-System
 
-# Backend: Python (FastAPI)
+# 2. Install required Python packages
 pip install -r requirements.txt
-python app.py
 
-#Streamlit Run
-python -m streamlit run medicine.py
-streamlit run medicine.py
+# 3. Set up MySQL database
+# - Ensure MySQL server is running
+# - Create a database named 'patient' (or your preferred name)
+# - Create the required table:
 
+CREATE DATABASE IF NOT EXISTS patient;
+USE patient;
 
+CREATE TABLE IF NOT EXISTS donation_records (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_name VARCHAR(255),
+    blood_type VARCHAR(10),
+    doctor_name VARCHAR(255),
+    date DATE,
+    time TIME,
+    blood_pressure INT,
+    symptoms TEXT,
+    medical_history TEXT,
+    contact_number VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+# 4. Configure database connection
+# Copy the example environment file and update with your database credentials
+cp .env.example .env
+
+# Edit .env file with your database credentials:
+# DB_HOST=localhost
+# DB_PORT=3306
+# DB_USER=root
+# DB_PASSWORD=your_mysql_password
+# DB_NAME=patient
+
+# 5. Run the Streamlit application
+streamlit run medical.py
+# or
+python -m streamlit run medical.py
+```
+
+### Troubleshooting
+
+**Error: Can't connect to MySQL server**
+- Ensure MySQL server is running: `sudo systemctl start mysql` (Linux) or start MySQL from Services (Windows)
+- Verify your database credentials in the `.env` file
+- Check that the database 'patient' exists
+- Ensure MySQL is listening on the correct port (default 3306)
+
+**Module not found errors**
+- Run `pip install -r requirements.txt` to install all dependencies
 
 
