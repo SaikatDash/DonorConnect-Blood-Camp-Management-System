@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge&color=28a745" />
   </a>
   <a href="#">
-    <img src="https://img.shields.io/badge/Platform-Web-blue?style=for-the-badge" />
+    <img src="https://img.shields.io/badge/Platform-Strealit-blue?style=for-the-badge" />
   </a>
   <a href="#">
     <img src="https://img.shields.io/badge/Database-MySQL-orange?style=for-the-badge" />
