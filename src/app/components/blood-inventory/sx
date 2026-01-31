@@ -1,0 +1,240 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog";
+import { Badge } from "@/app/components/ui/badge";
+import { Progress } from "@/app/components/ui/progress";
+import { Droplets, Plus, AlertTriangle } from "lucide-react";
+
+export interface BloodInventory {
+  inventory_id: string;
+  blood_group: string;
+  units_available: number;
+  location: string;
+  camp_id?: string;
+  expiry_date: string;
+}
+
+interface BloodInventoryProps {
+  inventory: BloodInventory[];
+  onAddInventory: (item: Omit<BloodInventory, 'inventory_id'>) => void;
+}
+
+export function BloodInventoryComponent({ inventory, onAddInventory }: BloodInventoryProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    blood_group: "",
+    units_available: "",
+    location: "",
+    camp_id: "",
+    expiry_date: "",
+  });
+
+  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onAddInventory({
+      ...formData,
+      units_available: parseInt(formData.units_available),
+      camp_id: formData.camp_id || undefined,
+    });
+    setFormData({
+      blood_group: "",
+      units_available: "",
+      location: "",
+      camp_id: "",
+      expiry_date: "",
+    });
+    setIsDialogOpen(false);
+  };
+
+  const getExpiryStatus = (expiryDate: string) => {
+    const expiry = new Date(expiryDate);
+    const today = new Date();
+    const daysUntilExpiry = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysUntilExpiry < 0) return { status: "expired", color: "text-red-600", badge: "Expired" };
+    if (daysUntilExpiry <= 7) return { status: "critical", color: "text-orange-600", badge: "Expiring Soon" };
+    if (daysUntilExpiry <= 14) return { status: "warning", color: "text-yellow-600", badge: "Use Soon" };
+    return { status: "good", color: "text-green-600", badge: "Good" };
+  };
+
+  // Aggregate inventory by blood group
+  const aggregatedInventory = bloodGroups.map(bg => {
+    const items = inventory.filter(item => item.blood_group === bg);
+    const totalUnits = items.reduce((sum, item) => sum + item.units_available, 0);
+    const criticalUnits = items.filter(item => {
+      const status = getExpiryStatus(item.expiry_date);
+      return status.status === "critical" || status.status === "expired";
+    }).reduce((sum, item) => sum + item.units_available, 0);
+    
+    return {
+      blood_group: bg,
+      totalUnits,
+      criticalUnits,
+      locations: items.length,
+    };
+  });
+
+  const totalUnits = aggregatedInventory.reduce((sum, item) => sum + item.totalUnits, 0);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold">Blood Inventory</h2>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-red-600 hover:bg-red-700">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Blood Units
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Blood to Inventory</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="blood_group">Blood Group</Label>
+                <Select value={formData.blood_group} onValueChange={(value) => setFormData({ ...formData, blood_group: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select blood group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bloodGroups.map((bg) => (
+                      <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="units_available">Units Available</Label>
+                <Input
+                  id="units_available"
+                  type="number"
+                  value={formData.units_available}
+                  onChange={(e) => setFormData({ ...formData, units_available: e.target.value })}
+                  required
+                  min="1"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Storage Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g., City Blood Bank"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="camp_id">Camp ID (Optional)</Label>
+                <Input
+                  id="camp_id"
+                  value={formData.camp_id}
+                  onChange={(e) => setFormData({ ...formData, camp_id: e.target.value })}
+                  placeholder="Link to camp if applicable"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="expiry_date">Expiry Date</Label>
+                <Input
+                  id="expiry_date"
+                  type="date"
+                  value={formData.expiry_date}
+                  onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700">
+                Add to Inventory
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Blood Group Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {aggregatedInventory.map((item) => (
+          <Card key={item.blood_group} className={item.totalUnits < 10 ? "border-orange-300" : ""}>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span>{item.blood_group}</span>
+                <Droplets className="h-4 w-4 text-red-500" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{item.totalUnits}</div>
+              <p className="text-xs text-muted-foreground">units available</p>
+              {item.criticalUnits > 0 && (
+                <div className="mt-2 flex items-center gap-1 text-xs text-orange-600">
+                  <AlertTriangle className="h-3 w-3" />
+                  {item.criticalUnits} expiring soon
+                </div>
+              )}
+              <Progress 
+                value={(item.totalUnits / totalUnits) * 100} 
+                className="mt-2 h-1"
+              />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Detailed Inventory Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Detailed Inventory</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Blood Group</TableHead>
+                <TableHead>Units</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Camp ID</TableHead>
+                <TableHead>Expiry Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {inventory.map((item) => {
+                const expiryInfo = getExpiryStatus(item.expiry_date);
+                return (
+                  <TableRow key={item.inventory_id}>
+                    <TableCell>
+                      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                        {item.blood_group}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">{item.units_available} units</TableCell>
+                    <TableCell>{item.location}</TableCell>
+                    <TableCell>{item.camp_id || "-"}</TableCell>
+                    <TableCell className={expiryInfo.color}>{item.expiry_date}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={expiryInfo.status === "expired" ? "destructive" : 
+                                expiryInfo.status === "critical" ? "outline" : "secondary"}
+                        className={expiryInfo.status === "critical" ? "border-orange-500 text-orange-700" : ""}
+                      >
+                        {expiryInfo.badge}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

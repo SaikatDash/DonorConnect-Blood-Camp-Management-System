@@ -1,0 +1,16 @@
+
+To run the FastAPI backend on Windows:
+
+Prereqs: Python 3.10+; MySQL running. Create a .env in the repo root with DB_HOST, DB_USER, DB_PASS, DB_NAME matching your MySQL setup (used in api.py). Ensure the required tables exist (users, donation_records, donors, camps, blood_inventory, emergency_requests, appointments, doctors).
+
+Install deps (from repo root):
+python -m venv .venv
+.venv\Scripts\activate
+pip install fastapi uvicorn[standard] mysql-connector-python python-dotenv
+
+Run the API (still in repo root):
+uvicorn api:app --reload --port 8000
+
+It will be available at http://localhost:8000 (CORS is set to allow the Vite frontend at 5173).
+
+Smoke test: open http://localhost:8000/docs to exercise endpoints, or hit something like GET /api/camps. If you see connection errors, confirm MySQL is up and the .env values are correct.
